@@ -23,20 +23,17 @@ if Y > 1:
     B = 0
 else:
     B = ((2*(D**2))/math.pi)*(np.arccos(Y)-(Y*math.sqrt(1-Y**2)))
+
 E = ((1+D**2)-(4*X**2))/(2*D)
 
 if E > 1:
     C = -2*D**2
-else:
-    C = ((2*D/np.pi)*(np.sin(alpha)))+(((1+D**2)/np.pi)*(alpha))-(((2*(1-D**2))/np.pi)*np.arctan((1+D)/(1-D))*np.tan(alpha/2))-(2*(D**2))
-
+elif E < -1:
+    C = 0
+else:    
+    C = (((2*D/np.pi)*np.sin(alpha))+(((1+D**2)/np.pi)*alpha)-((2*(1-D**2)/np.pi)*np.arctan(((1+D)/(1-D))*np.tan(alpha/2)))-(2*D**2))
 
 MTF = (A+B+C)/(1-D**2)
-
-lpmm = np.linspace(0,cutoff,500)
-s = MTF
-
-plt.plot(lpmm,s)
 
 
 print('your cut-off frequency is', cutoff, 'lp/mm')
