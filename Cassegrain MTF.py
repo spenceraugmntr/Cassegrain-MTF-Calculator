@@ -14,46 +14,49 @@ central_wavelength = central_wavelength*1e-6
 #equations/outputs
 D = secondary_diameter/primary_diameter
 cutoff = 1/(central_wavelength*(focal_length/primary_diameter))
-X = lpmm/cutoff
-Y = X/D
-A = (2/math.pi)*(np.arccos(X)-(X*math.sqrt(1-X**2)))
-alpha = np.arccos(((1+D**2)-(4*X**2))/(2*D))
 
-if Y > 1:
-    B = 0
-else:
-    B = ((2*(D**2))/math.pi)*(np.arccos(Y)-(Y*math.sqrt(1-Y**2)))
+def MTF(lp,D,cutoff):
+    X = lp/cutoff
+    Y = X/D
+    A = (2/math.pi)*(np.arccos(X)-(X*math.sqrt(1-X**2)))
+    alpha = np.arccos(((1+D**2)-(4*X**2))/(2*D))
+    if Y > 1:
+        B = 0
+    else:
+        B = ((2*(D**2))/math.pi)*(np.arccos(Y)-(Y*math.sqrt(1-Y**2)))
 
-E = ((1+D**2)-(4*X**2))/(2*D)
+#Defining limits of C
+    E = ((1+D**2)-(4*X**2))/(2*D)
 
-if E > 1:
-    C = -2*D**2
-elif E < -1:
-    C = 0
-else:    
-    C = (((2*D/np.pi)*np.sin(alpha))+(((1+D**2)/np.pi)*alpha)-((2*(1-D**2)/np.pi)*np.arctan(((1+D)/(1-D))*np.tan(alpha/2)))-(2*D**2))
+    if E > 1:
+        C = -2*D**2
+    elif E < -1:
+        C = 0
+    else:    
+        C = (((2*D/np.pi)*np.sin(alpha))+(((1+D**2)/np.pi)*alpha)-((2*(1-D**2)/np.pi)*np.arctan(((1+D)/(1-D))*np.tan(alpha/2)))-(2*D**2))
+    
+    
+    value = (A+B+C)/(1-D**2)
+    return value
 
-MTF = (A+B+C)/(1-D**2)
 
-
-print('your cut-off frequency is', cutoff, 'lp/mm')
-print('your primary/secondary ratio is', D)
-print('Your X is', X) 
-print('Your Y is', Y) 
-print('Your Alpha is', alpha) 
-print('Your A is', A) 
-print('Your B is', B) 
-print('Your C is', C) 
-print('Your MTF is', MTF,'lp/mm')            
-                 
-
+lpmmrange = np.arange(0,cutoff,1)
+MTFrange = np.zeros(len(lpmmrange))
+for i in range(0,len(lpmmrange)):
+    MTFrange[i] = MTF(lpmmrange[i],D,cutoff)
+plt.figure()
+plt.plot(lpmmrange,MTFrange)
 
 #axis titles
 plt.title('MTF (lp/mm)')
 plt.xlabel('Spatial Resolution (lp/mm)')
 plt.ylabel('MTF')
   
-# function to show the plot 
+#show the plot 
+plt.savefig('Cassegrain_MTF.png')
 plt.show() 
 
-
+#print important outputs
+print('your cut-off frequency is', cutoff, 'lp/mm')
+print('your primary/secondary ratio is', D)
+print('your MTF is', MTF(lpmm,D,cutoff),'lp/mm')
