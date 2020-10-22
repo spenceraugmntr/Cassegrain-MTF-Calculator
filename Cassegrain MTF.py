@@ -40,7 +40,7 @@ def MTF(lp,D,cutoff):
     return value
 
 
-lpmmrange = np.arange(0,cutoff,1)
+lpmmrange = np.arange(0,cutoff,.1)
 MTFrange = np.zeros(len(lpmmrange))
 for i in range(0,len(lpmmrange)):
     MTFrange[i] = MTF(lpmmrange[i],D,cutoff)
@@ -56,7 +56,15 @@ plt.ylabel('MTF')
 plt.savefig('Cassegrain_MTF.png')
 plt.show() 
 
+#50% MTF value
+for k in range(len(MTFrange)):
+    if MTFrange[k] <= 0.5:
+        halfMTF = lpmmrange[k]
+        break
+print('your spatial resolution value when your MTF = 50% is', halfMTF, 'lp/mm')
+
 #print important outputs
 print('your cut-off frequency is', cutoff, 'lp/mm')
 print('your primary/secondary ratio is', D)
 print('your MTF is', MTF(lpmm,D,cutoff),'lp/mm')
+
